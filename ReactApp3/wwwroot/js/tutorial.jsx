@@ -1,34 +1,51 @@
-﻿class CommentBox extends React.Component {
+﻿import { resolve } from "dns";
+import { rejects } from "assert";
+
+class CommentBox extends React.Component {
     constructor(props) {
         super(props);
         this.state = { data: [] };
     }
 
     loadCommentsFromServer() {
-        const xhr = new XMLHttpRequest();
-        xhr.open('get', this.props.url, true);
-        xhr.onload = () => {
-            const data = JSON.parse(xhr.responseText);
-        };
-        xhr.send();
-        this.setState({ data: data });
-        console.log(this.state.data);
+        return new Promise((resolve, rejects) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('get', this.props.url, true);
+            xhr.onload = () => {
+                //debugger;
+                const data = JSON.parse(xhr.responseText);
+                this.state.data = data;
+                resolve(data);
+                //this.setState({ data: data });
+                console.log("", this.state.data);
+
+            };
+            xhr.send();
+        });
+        
+       
 
     }
     componentDidMount() {
-        this.loadCommentsFromServer();
-        window.setInterval(
-            () => this.loadCommentsFromServer(),
-            this.props.pollInterval,
-        );
+        this.loadCommentsFromServer().then(data => {
+            this.state.data = data;
+        }).catch(err => {
+            console.log(err);
+        })
+        //window.setInterval(
+        //    () => ,
+        //    this.props.pollInterval,
+        //);
     }
 
     render() {
-        
+        debugger;
+        test = this.state.data;
         return (
-  
+           
             <div className="commentBox">
                 <h1>Comments</h1>
+                <h1>{test}</h1>
                 <CommentList data={this.state.data} />
                 <CommentForm />
             </div>
